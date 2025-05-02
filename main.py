@@ -5,7 +5,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
+
 
 openai = OpenAI(
     api_key = os.getenv('OPENAI_API_SECRET_KEY')
@@ -17,9 +19,9 @@ templates = Jinja2Templates(directory="templates")
 
 chat_responses = []
 
-#@app.get("/", response_class=HTMLResponse)
-#async def chat_page(request: Request):
-#    return templates.TemplateResponse("home.html", {"request": request, "chat_responses": chat_responses})
+@app.get("/", response_class=HTMLResponse)
+async def chat_page(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request, "chat_responses": chat_responses})
 
 
 chat_log = [{'role': 'system',
@@ -58,23 +60,23 @@ async def chat(websocket: WebSocket):
             break
 
 
-# @app.post("/", response_class=HTMLResponse)
-# async def chat(request: Request, user_input: Annotated[str, Form()]):
-#
-#     chat_log.append({'role': 'user', 'content': user_input})
-#     chat_responses.append(user_input)
-#
-#     response = openai.chat.completions.create(
-#         model='gpt-4',
-#         messages=chat_log,
-#         temperature=0.6
-#     )
-#
-#     bot_response = response.choices[0].message.content
-#     chat_log.append({'role': 'assistant', 'content': bot_response})
-#     chat_responses.append(bot_response)
-#
-#     return templates.TemplateResponse("home.html", {"request": request, "chat_responses": chat_responses})
+@app.post("/", response_class=HTMLResponse)
+async def chat(request: Request, user_input: Annotated[str, Form()]):
+
+    chat_log.append({'role': 'user', 'content': user_input})
+    chat_responses.append(user_input)
+
+    response = openai.chat.completions.create(
+        model='gpt-4',
+        messages=chat_log,
+        temperature=0.6
+    )
+
+    bot_response = response.choices[0].message.content
+    chat_log.append({'role': 'assistant', 'content': bot_response})
+    chat_responses.append(bot_response)
+
+    return templates.TemplateResponse("home.html", {"request": request, "chat_responses": chat_responses})
 
 
 @app.get("/image", response_class=HTMLResponse)
