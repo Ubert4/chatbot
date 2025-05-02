@@ -1,4 +1,3 @@
-# John U
 from openai import OpenAI
 from fastapi import FastAPI, Form, Request, WebSocket
 from typing import Annotated
